@@ -66,6 +66,34 @@ the second argument is not provided, ``true`` is assumed.
 
     The regex defaults to ``/^y/i``.
 
+.. note::
+
+    When your output implements ``ConsoleOutputInterface`` the ``stderr`` output is used using :method:`ConsoleOutputInterface::getErrorOutput`.
+    This output might have a different formatter than the default one. This might lead to unexpected results.
+    If this is the case, you can apply custom styles directly on to the error output::
+
+        use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+        use Symfony\Component\Console\Question\Question;
+        use Symfony\Component\Console\Output\ConsoleOutputInterface;
+
+        // ...
+        public function execute(InputInterface $input, OutputInterface $output)
+        {
+            // ...
+            $question = new Question('Please enter the name of the bundle', 'AcmeDemoBundle');
+
+            if($questionOutput instanceof ConsoleOutputInterface) {
+                $questionOutput = $output->getErrorOutput();
+            }
+
+            $outputStyle = new OutputFormatterStyle('red', 'yellow', ['bold', 'blink']);
+            $questionOutput->getFormatter()->setStyle('fire', $outputStyle);
+
+            $bundleName = $helper->ask($input, $questionOutput, $question);
+        }
+
+    More information on formatting can be found on the :doc:`/components/console/helpers/formatterhelper` page.
+
 Asking the User for Information
 -------------------------------
 
